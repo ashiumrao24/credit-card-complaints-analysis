@@ -15,7 +15,7 @@ https://public.tableau.com/app/profile/aashi.umrao/viz/creditcardcomplaint_17656
 > *This is a static image preview. Interactive filters such as date range, company,
 > and complaint attributes are available in the live dashboard.*
 
-![Credit Card Complaints Dashboard](Dashboard 1.png)
+![Credit Card Complaints Dashboard](Dashboard%201.png)
 
 ---
 
@@ -32,8 +32,6 @@ To analyze customer complaints related to credit cards and identify:
 - Total Credit Card Complaints
 - % Complaints with Timely Response
 - In-Progress Complaints
-- Complaint Trends Over Time
-- Complaint Submission Channels
 
 ---
 
@@ -50,17 +48,14 @@ To analyze customer complaints related to credit cards and identify:
 ## 🛠 Tools & Technologies
 - **Tableau Public** – Interactive dashboard & visualization
 - **Python (Pandas)** – Data cleaning and preprocessing
-- **CSV Dataset** – Consumer complaint records
+- **xlsx Dataset** – Consumer complaint records
 
 ---
 
 ## 📂 Dataset
-**Consumer Financial Protection Bureau (CFPB) – Consumer Complaints Database**
-
 🔗 Dataset source:  
 https://www.consumerfinance.gov/data-research/consumer-complaints/
 
-*(Large datasets are not included in this repository due to size constraints.)*
 
 ---
 
