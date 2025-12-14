@@ -47,7 +47,6 @@ To analyze customer complaints related to credit cards and identify:
 
 ## 🛠 Tools & Technologies
 - **Tableau Public** – Interactive dashboard & visualization
-- **Python (Pandas)** – Data cleaning and preprocessing
 - **xlsx Dataset** – Consumer complaint records
 
 ---
