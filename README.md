@@ -53,7 +53,7 @@ To analyze customer complaints related to credit cards and identify:
 
 ## 📂 Dataset
 🔗 Dataset source:  
-https://www.consumerfinance.gov/data-research/consumer-complaints/
+https://www.kaggle.com/datasets/datadrivenengineers/credit-card-complaints
 
 
 ---
