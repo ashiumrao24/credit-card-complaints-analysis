@@ -69,3 +69,9 @@ https://www.kaggle.com/datasets/datadrivenengineers/credit-card-complaints
 ## 🏗️ Extended Version: MySQL Data Warehouse
 
 The [`data-warehouse/`](data-warehouse/) folder rebuilds this dataset as a tested MySQL star schema with a Python ETL pipeline, data quality gates, and six SQL reports. Its totals reconcile with this dashboard.
+
+---
+
+## ☁️ Extended Version: AWS Serverless Pipeline
+
+The [`aws-pipeline/`](aws-pipeline/) folder ingests this dataset on AWS using S3, Lambda, Glue Data Catalog, Athena, and CloudFormation.

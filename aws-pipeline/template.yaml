@@ -1,0 +1,189 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Serverless complaints ingestion with S3, Lambda, Glue Data Catalog and Athena.
+
+Parameters:
+  CodeBucket:
+    Type: String
+    Description: Bucket holding the Lambda zip. Set by scripts/deploy.py.
+  CodeKey:
+    Type: String
+    Description: Key of the Lambda zip. It includes a hash, so code changes trigger an update.
+
+Resources:
+  DataBucket:
+    Type: AWS::S3::Bucket
+    DependsOn: IngestInvokePermission
+    Properties:
+      BucketName: !Sub complaints-data-${AWS::AccountId}-${AWS::Region}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireAthenaResults
+            Prefix: athena-results/
+            Status: Enabled
+            ExpirationInDays: 7
+      NotificationConfiguration:
+        LambdaConfigurations:
+          # The landing/ filter also prevents a loop: the function only writes elsewhere.
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt IngestFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: landing/
+                  - Name: suffix
+                    Value: .csv
+
+  IngestDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 1209600
+
+  IngestLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/complaints-ingest
+      RetentionInDays: 14
+
+  IngestRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: least-privilege
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Sub arn:aws:s3:::complaints-data-${AWS::AccountId}-${AWS::Region}/landing/*
+                  - !Sub arn:aws:s3:::complaints-data-${AWS::AccountId}-${AWS::Region}/audit/*
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub arn:aws:s3:::complaints-data-${AWS::AccountId}-${AWS::Region}/curated/*
+                  - !Sub arn:aws:s3:::complaints-data-${AWS::AccountId}-${AWS::Region}/quarantine/*
+                  - !Sub arn:aws:s3:::complaints-data-${AWS::AccountId}-${AWS::Region}/rejected/*
+                  - !Sub arn:aws:s3:::complaints-data-${AWS::AccountId}-${AWS::Region}/audit/*
+              # Without ListBucket, S3 reports a missing object as 403 instead of 404.
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !Sub arn:aws:s3:::complaints-data-${AWS::AccountId}-${AWS::Region}
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt IngestLogGroup.Arn
+              - Effect: Allow
+                Action: sqs:SendMessage
+                Resource: !GetAtt IngestDeadLetterQueue.Arn
+
+  IngestFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: IngestLogGroup
+    Properties:
+      FunctionName: complaints-ingest
+      Runtime: python3.13
+      Architectures:
+        - arm64
+      Handler: handler.lambda_handler
+      Code:
+        S3Bucket: !Ref CodeBucket
+        S3Key: !Ref CodeKey
+      Role: !GetAtt IngestRole.Arn
+      MemorySize: 512
+      Timeout: 120
+      DeadLetterConfig:
+        TargetArn: !GetAtt IngestDeadLetterQueue.Arn
+
+  IngestInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref IngestFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !Sub arn:aws:s3:::complaints-data-${AWS::AccountId}-${AWS::Region}
+
+  ComplaintsDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: complaints_lake
+
+  ComplaintsTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref ComplaintsDatabase
+      TableInput:
+        Name: complaints
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          classification: json
+          # Partition projection: Athena computes partitions, so no crawler is needed.
+          projection.enabled: "true"
+          projection.year.type: integer
+          projection.year.range: 2015,2035
+          storage.location.template: !Sub s3://complaints-data-${AWS::AccountId}-${AWS::Region}/curated/year=${!year}/
+        PartitionKeys:
+          - Name: year
+            Type: int
+        StorageDescriptor:
+          Location: !Sub s3://complaints-data-${AWS::AccountId}-${AWS::Region}/curated/
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+          Columns:
+            - {Name: complaint_id, Type: bigint}
+            - {Name: date_received, Type: string}
+            - {Name: date_sent, Type: string}
+            - {Name: company, Type: string}
+            - {Name: issue, Type: string}
+            - {Name: state, Type: string}
+            - {Name: zip_code, Type: string}
+            - {Name: channel, Type: string}
+            - {Name: company_response, Type: string}
+            - {Name: is_timely, Type: int}
+            - {Name: is_disputed, Type: int}
+            - {Name: days_to_forward, Type: int}
+            - {Name: is_date_anomaly, Type: int}
+
+  AthenaWorkGroup:
+    Type: AWS::Athena::WorkGroup
+    Properties:
+      Name: complaints
+      RecursiveDeleteOption: true
+      WorkGroupConfiguration:
+        EnforceWorkGroupConfiguration: true
+        # Cost guardrail: Athena cancels any query scanning more than 1 GB.
+        BytesScannedCutoffPerQuery: 1073741824
+        ResultConfiguration:
+          OutputLocation: !Sub s3://complaints-data-${AWS::AccountId}-${AWS::Region}/athena-results/
+
+Outputs:
+  DataBucketName:
+    Value: !Ref DataBucket
+  DeadLetterQueueUrl:
+    Value: !Ref IngestDeadLetterQueue
