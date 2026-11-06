@@ -1,0 +1,31 @@
+company_name,issue_rank,issue_name,complaints,pct_of_company
+Amex,1,Billing disputes,1100,16.9
+Amex,2,Rewards,814,12.5
+Amex,3,Other,617,9.5
+Bank of America,1,Billing disputes,1496,16.8
+Bank of America,2,Other,933,10.5
+Bank of America,3,Closing/Cancelling account,798,9.0
+Barclays PLC,1,Billing disputes,554,16.4
+Barclays PLC,2,Identity theft / Fraud / Embezzlement,401,11.9
+Barclays PLC,3,Other,324,9.6
+Capital One,1,Billing disputes,2083,16.5
+Capital One,2,Identity theft / Fraud / Embezzlement,1442,11.4
+Capital One,3,Other,1381,10.9
+Citibank,1,Billing disputes,3119,19.0
+Citibank,2,Other,1518,9.3
+Citibank,3,Identity theft / Fraud / Embezzlement,1316,8.0
+Discover,1,Billing disputes,635,15.2
+Discover,2,Other,457,10.9
+Discover,3,Identity theft / Fraud / Embezzlement,421,10.1
+JPMorgan Chase & Co.,1,Billing disputes,1689,16.7
+JPMorgan Chase & Co.,2,Other,1062,10.5
+JPMorgan Chase & Co.,3,APR or interest rate,973,9.6
+Synchrony Financial,1,Billing disputes,1510,17.7
+Synchrony Financial,2,Other,849,9.9
+Synchrony Financial,3,Identity theft / Fraud / Embezzlement,743,8.7
+U.S. Bancorp,1,Billing disputes,341,14.2
+U.S. Bancorp,2,Other,250,10.4
+U.S. Bancorp,3,Identity theft / Fraud / Embezzlement,241,10.1
+Wells Fargo & Company,1,Billing disputes,548,13.9
+Wells Fargo & Company,2,Other,403,10.2
+Wells Fargo & Company,3,Identity theft / Fraud / Embezzlement,382,9.7

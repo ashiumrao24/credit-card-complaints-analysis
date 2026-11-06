@@ -1,0 +1,16 @@
+company_name,complaints,timely_pct,disputed_pct,monetary_relief_pct,lowest_dispute_rank
+Citibank,16383,99.39,20.38,31.43,4
+Capital One,12657,99.73,18.45,18.80,2
+JPMorgan Chase & Co.,10115,99.85,24.99,13.80,12
+Bank of America,8889,97.58,23.65,14.28,11
+Synchrony Financial,8541,100.00,16.15,28.77,1
+Amex,6524,99.98,29.76,16.65,15
+Discover,4182,99.64,22.65,17.50,10
+Wells Fargo & Company,3952,92.23,22.34,16.35,8
+Barclays PLC,3368,99.88,18.51,28.09,3
+U.S. Bancorp,2397,99.58,22.62,14.98,9
+TD Bank US Holding Company,1269,99.84,25.31,25.22,14
+USAA Savings,882,96.15,20.85,23.47,5
+"PayPal Holdings, Inc.",667,99.70,21.36,22.04,6
+HSBC North America Holdings Inc.,660,98.64,21.62,7.88,7
+First National Bank of Omaha,563,97.69,25.05,14.56,13

@@ -64,4 +64,8 @@ https://www.kaggle.com/datasets/datadrivenengineers/credit-card-complaints
 
 ---
 
+---
 
+## 🏗️ Extended Version: MySQL Data Warehouse
+
+The [`data-warehouse/`](data-warehouse/) folder rebuilds this dataset as a tested MySQL star schema with a Python ETL pipeline, data quality gates, and six SQL reports. Its totals reconcile with this dashboard.

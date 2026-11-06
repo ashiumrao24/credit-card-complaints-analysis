@@ -1,0 +1,9 @@
+company_response,complaints,pct_of_all,disputed_pct,complaints_with_dispute_value
+Closed with explanation,51873,59.70,26.99,49710
+Closed with monetary relief,17942,20.65,11.20,17288
+Closed with non-monetary relief,9215,10.61,12.46,8798
+Closed without relief,4246,4.89,24.21,4229
+Closed with relief,2500,2.88,11.23,2485
+Closed,649,0.75,22.26,611
+In progress,329,0.38,,0
+Untimely response,139,0.16,,0

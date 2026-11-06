@@ -1,0 +1,8 @@
+channel_name,complaints,avg_days,median_days,max_days
+Web,59889,2.05,0.0,993
+Referral,14406,4.99,3.0,541
+Phone,6502,3.42,1.0,630
+Postal mail,5182,5.22,2.0,619
+Fax,871,5.47,3.0,197
+Email,42,5.67,2.0,84
+Unknown,1,0.00,0.0,0
